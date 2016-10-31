@@ -3,7 +3,7 @@
 namespace AvlTree.Tests
 {
     [TestClass]
-    public class UnitTests
+    public class InsertUnitTests
     {
         [TestMethod]
         public void EmptyTree()

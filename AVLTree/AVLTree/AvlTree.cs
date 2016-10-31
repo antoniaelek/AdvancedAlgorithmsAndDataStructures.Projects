@@ -7,7 +7,7 @@ namespace AvlTree
     {
         public sealed class Node
         {
-            public int? Key { get; }
+            public int? Key { get; set; }
             public Node Left { get; internal set; }
             public Node Right { get; internal set; }
             public int Height { get; internal set; }
@@ -31,10 +31,11 @@ namespace AvlTree
 
         public Node Root { get; set; }
 
-        
-        public void Delete(Node node)
+        public void Print()
         {
-            
+            var counts = new HashSet<int>() { -1 };
+            PrintTree(Root, null, 0, "", ref counts);
+            Console.WriteLine();
         }
 
         public void Insert(int key)
@@ -42,11 +43,83 @@ namespace AvlTree
             Root = InsertInto(key, Root);
         }
 
-        public void Print()
+        public void Delete(int? key)
         {
-            var counts = new HashSet<int>() {-1};
-            PrintTree(Root, null, 0, "", ref counts);
-            Console.WriteLine();
+            Root = DeleteNode(Root, key);
+        }
+
+        private Node smallestInSubtree(Node node)
+        {
+            var current = node;
+            while (current.Left != null)
+                current = current.Left;
+            return current;
+        }
+
+        public Node DeleteNode(Node root, int? key)
+        {
+            root = DeleteByMerging(root, key);
+
+            // If the tree had only one node then return
+            if (root == null)
+                return null;
+
+            root.Height = Max((root.Left), (root.Right)) + 1;
+            var balance = root.Balance;
+
+            //// If this node becomes unbalanced, then there are 4 cases
+            //// Left Left Case
+            if (balance > 1 && root.Left.Balance >= 0)
+            {
+                return LeftRotate(root);
+            }
+
+            // Left Right Case
+            if (balance > 1 && (root.Left.Balance) < 0)
+            {
+                root.Left = LeftRotate(root.Left);
+                return RightRotate(root);
+            }
+
+            // Right Right Case
+            if (balance < -1 && (root.Right).Balance <= 0)
+            {
+                return LeftRotate(root);
+            }
+
+            // Right Left Case
+            if (balance < -1 && (root.Right).Balance > 0)
+            {
+                root.Right = RightRotate(root.Right);
+                return LeftRotate(root);
+            }
+
+            return root;
+        }
+
+        private Node DeleteByMerging(Node root, int? key)
+        {
+            if (root == null) return null;
+
+            if (key < root.Key)
+                root.Left = DeleteNode(root.Left, key);
+            else if (key > root.Key)
+                root.Right = DeleteNode(root.Right, key);
+            else
+            {
+                if ((root.Left == null) || (root.Right == null))
+                {
+                    var temp = root.Left ?? root.Right;
+                    root = temp;
+                }
+                else
+                {
+                    var temp = smallestInSubtree(root.Right);
+                    root.Key = temp.Key;
+                    root.Right = DeleteNode(root.Right, temp.Key);
+                }
+            }
+            return root;
         }
 
         private void PrintTree(Node node, Node parent, int counter, string msg, ref HashSet<int> openCounts)
@@ -88,7 +161,7 @@ namespace AvlTree
             PrintTree(node.Right, node, counter+1, "R", ref openCounts);
         }
 
-        private static Node InsertInto(int key, Node node)
+        private static Node InsertInto(int? key, Node node)
         {
             if (node == null) return new Node(key);
             if (key < node.Key) node.Left = InsertInto(key, node.Left);
@@ -99,7 +172,7 @@ namespace AvlTree
             return BalanceTree(key, node);
         }
 
-        private static Node BalanceTree(int key, Node node)
+        private static Node BalanceTree(int? key, Node node)
         {
             var balance = node.Balance;
 
