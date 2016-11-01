@@ -14,7 +14,7 @@ namespace AvlTree
             IEnumerable<string> inputs;
             try
             {
-                inputs = File.ReadLines(args[0]);
+                inputs = File.ReadAllText(args[0]).Split(' ');
             }
             catch (Exception e)
             {
