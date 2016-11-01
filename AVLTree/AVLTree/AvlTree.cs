@@ -64,7 +64,7 @@ namespace AvlTree
 
             root.Height = Max(root.Left, (root.Right)) + 1;
             
-            return BalanceTree(root);
+            return BalanceAfterDelete(root);
         }
 
         private Node DeleteByMerging(Node root, int? key)
@@ -100,10 +100,10 @@ namespace AvlTree
 
             node.Height = 1 + Max(node.Left, node.Right);
 
-            return BalanceTree(node);
+            return BalanceAfterInsert(node);
         }
 
-        private static Node BalanceTree(Node node)
+        private static Node BalanceAfterDelete(Node node)
         {
             // Left Left Case
             if (node.Balance < -1 && node.Left.Balance <= 0)
@@ -126,6 +126,29 @@ namespace AvlTree
 
             // Right Left Case
             if (node.Balance > 1 && node.Right.Balance < 0)
+            {
+                node.Right = RightRotate(node.Right);
+                return LeftRotate(node);
+            }
+
+            return node;
+        }
+
+        private static Node BalanceAfterInsert(Node node)
+        {
+            if (node.Balance == -2 && node.Left.Balance == -1)
+                return RightRotate(node);
+
+            if (node.Balance == 2 && node.Right.Balance == 1)
+                return LeftRotate(node);
+
+            if (node.Balance == -2 && node.Left.Balance == 1)
+            {
+                node.Left = LeftRotate(node.Left);
+                return RightRotate(node);
+            }
+
+            if (node.Balance == 2 && node.Right.Balance == -1)
             {
                 node.Right = RightRotate(node.Right);
                 return LeftRotate(node);
