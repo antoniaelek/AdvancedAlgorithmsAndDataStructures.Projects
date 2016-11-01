@@ -48,7 +48,7 @@ namespace AvlTree
             Root = DeleteNode(Root, key);
         }
 
-        private Node smallestInSubtree(Node node)
+        private static Node SmallestInSubtree(Node node)
         {
             var current = node;
             while (current.Left != null)
@@ -56,45 +56,15 @@ namespace AvlTree
             return current;
         }
 
-        public Node DeleteNode(Node root, int? key)
+        private Node DeleteNode(Node root, int? key)
         {
             root = DeleteByMerging(root, key);
 
-            // If the tree had only one node then return
-            if (root == null)
-                return null;
+            if (root == null) return null;
 
-            root.Height = Max((root.Left), (root.Right)) + 1;
-            var balance = root.Balance;
-
-            //// If this node becomes unbalanced, then there are 4 cases
-            //// Left Left Case
-            if (balance > 1 && root.Left.Balance >= 0)
-            {
-                return LeftRotate(root);
-            }
-
-            // Left Right Case
-            if (balance > 1 && (root.Left.Balance) < 0)
-            {
-                root.Left = LeftRotate(root.Left);
-                return RightRotate(root);
-            }
-
-            // Right Right Case
-            if (balance < -1 && (root.Right).Balance <= 0)
-            {
-                return LeftRotate(root);
-            }
-
-            // Right Left Case
-            if (balance < -1 && (root.Right).Balance > 0)
-            {
-                root.Right = RightRotate(root.Right);
-                return LeftRotate(root);
-            }
-
-            return root;
+            root.Height = Max(root.Left, (root.Right)) + 1;
+            
+            return BalanceAfterDelete(root);
         }
 
         private Node DeleteByMerging(Node root, int? key)
@@ -114,51 +84,12 @@ namespace AvlTree
                 }
                 else
                 {
-                    var temp = smallestInSubtree(root.Right);
+                    var temp = SmallestInSubtree(root.Right);
                     root.Key = temp.Key;
                     root.Right = DeleteNode(root.Right, temp.Key);
                 }
             }
             return root;
-        }
-
-        private void PrintTree(Node node, Node parent, int counter, string msg, ref HashSet<int> openCounts)
-        {
-            if (node == null) return;
-            if (counter > 0) openCounts.Add(counter);
-            
-            var str0 = "";
-            
-            for (int i = 0; i < counter; i++)
-            {
-                if (openCounts.Contains(i))
-                    str0 += "|   ";
-                else str0 += "    ";
-            }
-            var str = parent != null ? str0 + "|   " : "   ";
-            if (parent != null) Console.WriteLine(str);
-
-            str = str0 + (parent != null ? "|___" : "    ") + node.Key + " ";
-            Console.Write(str);
-
-            if (!string.IsNullOrEmpty(msg))
-            {
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Write(msg + "(" + parent?.Key + "),");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write(" B=" + node.Balance + "\n");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.BackgroundColor = ConsoleColor.Black;
-            
-                
-
-            if (msg == "R") openCounts.RemoveWhere(el => el == counter);
-
-            PrintTree(node.Left, node, counter+1, "L", ref openCounts);
-            PrintTree(node.Right, node, counter+1, "R", ref openCounts);
         }
 
         private static Node InsertInto(int? key, Node node)
@@ -169,26 +100,55 @@ namespace AvlTree
 
             node.Height = 1 + Max(node.Left, node.Right);
 
-            return BalanceTree(key, node);
+            return BalanceAfterInsert(key, node);
         }
 
-        private static Node BalanceTree(int? key, Node node)
+        private static Node BalanceAfterInsert(int? key, Node node)
         {
-            var balance = node.Balance;
-
-            if (balance == -2 && key < node.Left.Key)
+            if (node.Balance == -2 && key < node.Left.Key)
                 return RightRotate(node);
 
-            if (balance == 2 && key > node.Right.Key)
+            if (node.Balance == 2 && key > node.Right.Key)
                 return LeftRotate(node);
 
-            if (balance == -2 && key > node.Left.Key)
+            if (node.Balance == -2 && key > node.Left.Key)
             {
                 node.Left = LeftRotate(node.Left);
                 return RightRotate(node);
             }
 
-            if (balance == 2 && key < node.Right.Key)
+            if (node.Balance == 2 && key < node.Right.Key)
+            {
+                node.Right = RightRotate(node.Right);
+                return LeftRotate(node);
+            }
+
+            return node;
+        }
+
+        private static Node BalanceAfterDelete(Node node)
+        {
+            // Left Left Case
+            if (node.Balance < -1 && node.Left.Balance <= 0)
+            {
+                return RightRotate(node);
+            }
+
+            // Left Right Case
+            if (node.Balance < -1 && node.Left.Balance > 0)
+            {
+                node.Left = LeftRotate(node.Left);
+                return RightRotate(node);
+            }
+
+            // Right Right Case
+            if (node.Balance > 1 && node.Right.Balance >= 0)
+            {
+                return LeftRotate(node);
+            }
+
+            // Right Left Case
+            if (node.Balance > 1 && node.Right.Balance < 0)
             {
                 node.Right = RightRotate(node.Right);
                 return LeftRotate(node);
@@ -218,7 +178,7 @@ namespace AvlTree
 
             q.Left = p;
             p.Right = ql;
-            
+
             p.Height = Max(p.Left, p.Right) + 1;
             q.Height = Max(q.Left, q.Right) + 1;
 
@@ -232,5 +192,44 @@ namespace AvlTree
             if (n2 == null) return n1.Height;
             return (n1.Height > n2.Height ? n1.Height : n2.Height);
         }
+
+        private static void PrintTree(Node node, Node parent, int counter, 
+            string msg, ref HashSet<int> openCounts)
+        {
+            if (node == null) return;
+            if (counter > 0) openCounts.Add(counter);
+
+            var str0 = "";
+
+            for (int i = 0; i < counter; i++)
+            {
+                if (openCounts.Contains(i))
+                    str0 += "|   ";
+                else str0 += "    ";
+            }
+            var str = parent != null ? str0 + "|   " : "   ";
+            if (parent != null) Console.WriteLine(str);
+
+            str = str0 + (parent != null ? "|___" : "    ") + node.Key + " ";
+            Console.Write(str);
+
+            if (!string.IsNullOrEmpty(msg))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write(msg + "(" + parent?.Key + "),");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write(" B=" + node.Balance + "\n");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+
+            if (msg == "R") openCounts.RemoveWhere(el => el == counter);
+
+            PrintTree(node.Left, node, counter + 1, "L", ref openCounts);
+            PrintTree(node.Right, node, counter + 1, "R", ref openCounts);
+        }
+
     }
 }
