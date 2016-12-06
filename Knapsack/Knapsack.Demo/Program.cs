@@ -1,4 +1,8 @@
-﻿namespace Knapsack.Demo
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Knapsack.Demo
 {
     class Program
     {
@@ -15,6 +19,9 @@
                                          new Element("mlijeko", 5, 4)));
             k.Run(10);
             k.PrintTable(12);
+            Console.WriteLine();
+            Console.WriteLine("Max value that can be achieved: " + k.GetMaxValue());
+            Console.WriteLine("Optimal items: " + string.Join(", ", k.GetOptimaElements().Select(itm => itm.Name).ToList()));
         }
     }
 }

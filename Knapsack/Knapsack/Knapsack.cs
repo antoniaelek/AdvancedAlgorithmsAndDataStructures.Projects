@@ -26,6 +26,57 @@ namespace Knapsack
             }
         }
 
+        public decimal? GetMaxValue()
+        {
+            if (AlgorithmRun)
+            {
+                Console.WriteLine("Algorithm not yet run.");
+                return null;
+            }
+
+            // max cost == last row in table
+            var maxCost = Costs.OrderByDescending(c => c).FirstOrDefault();
+
+            // last category
+            var lastCategory = Categories.Last();
+
+            //max value in last category
+            var max = Table.Where(e => lastCategory.Elements.Contains(e.Key.Value))
+                .OrderByDescending(e=>e.Value).FirstOrDefault();
+            return max.Value;
+        }
+
+        public List<Element> GetOptimaElements()
+        {
+            if (AlgorithmRun)
+            {
+                Console.WriteLine("Algorithm not yet run.");
+                return null;
+            }
+
+            var list = new List<Element>();
+
+           var maxCost = GetMaxValue();
+
+            for (int i = Categories.Count - 1; i >= 0; i--)
+            {
+                var category = Categories[i];
+                var max = Table
+                    .Where(e => category.Elements.Contains(e.Key.Value))
+                    .OrderByDescending(e => e.Value);
+                var max2 = max.FirstOrDefault(e => e.Value <= maxCost);
+                list.Add(max2.Key.Value);
+                var remainingMax = max2.Value - max2.Key.Value.Value;
+                maxCost = remainingMax;
+                if (maxCost == 0) break;
+            }
+
+
+            return list;
+        }
+
+        private bool AlgorithmRun => !Table.Any();
+
         public void Run()
         {
             CalculateBest();
