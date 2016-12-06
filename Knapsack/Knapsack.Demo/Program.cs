@@ -4,7 +4,7 @@ namespace Demo
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var k = new Knapsack.Knapsack(
                 new Category("c1", new Element("e11", 5, 5), new Element("e12", 10, 10)),

@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapsack", "Knapsack\Knapsack.csproj", "{F6810234-9868-4942-821B-B3372CDDFB7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{426B4393-2501-4A20-B673-E635B9950ABB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapsack.UnitTests", "Knapsack.Tests\Knapsack.UnitTests.csproj", "{426B4393-2501-4A20-B673-E635B9950ABB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{32E5AAB1-74DE-4921-B1EF-84405378326C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapsack.Demo", "Knapsack.Demo\Knapsack.Demo.csproj", "{32E5AAB1-74DE-4921-B1EF-84405378326C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
