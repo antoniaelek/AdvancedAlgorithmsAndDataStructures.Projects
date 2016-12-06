@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Knapsack;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UnitTests
+namespace Knapsack.Tests
 {
     [TestClass]
     public class KnapsackTests
@@ -11,7 +10,7 @@ namespace UnitTests
         [TestMethod]
         public void TestEmpty()
         {
-            var k = new Knapsack.Knapsack();
+            var k = new Knapsack();
             Assert.IsNotNull(k.Categories);
             Assert.IsNotNull(k.Table);
             Assert.AreEqual(0,k.Categories.Count);
@@ -21,7 +20,7 @@ namespace UnitTests
         [TestMethod]
         public void TestOverloadedConstructorEmpty()
         {
-            var k = new Knapsack.Knapsack(new Category("c1"),new Category("c2"));
+            var k = new Knapsack(new Category("c1"),new Category("c2"));
             Assert.IsNotNull(k.Categories);
             Assert.IsNotNull(k.Table);
             Assert.AreEqual(2, k.Categories.Count);
@@ -34,7 +33,7 @@ namespace UnitTests
             var e1 = new Element("e1", 10, 5);
             var e2 = new Element("e2", 10, 6);
             var e3 = new Element("e3", 10, 2);
-            var k = new Knapsack.Knapsack(
+            var k = new Knapsack(
                 new Category("c1", e1, e2),
                 new Category("c2", e3));
             Assert.IsTrue(k.Table.Keys.Contains(new KeyValuePair<decimal, Element>(7,e1)));

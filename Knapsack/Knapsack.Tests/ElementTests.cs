@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Knapsack;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UnitTests
+namespace Knapsack.Tests
 {
     [TestClass]
     public class ElementTests
