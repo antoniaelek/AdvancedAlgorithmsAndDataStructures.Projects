@@ -8,8 +8,8 @@ namespace Knapsack
     public class Knapsack
     {
         public List<Category> Categories { get; set; }
-        public Dictionary<KeyValuePair<decimal,Element>,decimal> Table { get; set; }
-        public IEnumerable<decimal> Costs { get; set; }
+        public Dictionary<KeyValuePair<decimal,Element>,decimal> Table { get; }
+        public IEnumerable<decimal> Costs { get; private set; }
 
         public Knapsack()
         {
@@ -24,12 +24,16 @@ namespace Knapsack
             {
                 Categories.Add(c);
             }
+        }
+
+        public void Run()
+        {
             CalculateBest();
         }
 
-        public void Refresh()
+        public void Run(decimal maxCost)
         {
-            CalculateBest();
+            CalculateBest(maxCost);
         }
 
         public void PrintTable(int pad)
@@ -38,8 +42,8 @@ namespace Knapsack
             Console.Write("category|".PadLeft(pad));
             foreach (var category in Categories)
             {
-                int n = category.Elements.Count * pad + category.Elements.Count - Categories.Count;
-                Console.Write(" " + category.Name.PadLeft(n) + "|");
+                int n = category.Elements.Count * pad + category.Elements.Count - 1;
+                Console.Write("" + category.Name.PadLeft(n) + "|");
             }
             PrintLineSeparator(pad);
 
@@ -50,6 +54,16 @@ namespace Knapsack
                 foreach (var element in category.Elements)
                 {
                     Console.Write(element.Name.PadLeft(pad) + "|");
+                }
+            }
+            Console.WriteLine();
+            Console.Write("|".PadLeft(pad));
+            foreach (var category in Categories)
+            {
+                foreach (var element in category.Elements)
+                {
+                    var str = "C:" + element.Cost + " V:" + element.Value;
+                    Console.Write(str.PadLeft(pad) + "|");
                 }
             }
             PrintLineSeparator(pad);
@@ -72,29 +86,60 @@ namespace Knapsack
             }
         }
 
-        private void CalculateBest()
+        private void CalculateBest(decimal? maxCost = null)
         {
             Table.Clear();
 
+            // Run all possible costs
             var costsInit = (from category in Categories
                          from element in category.Elements
                          select element.Cost).ToList();
             Costs = GetAllSums(costsInit);
 
-            // Set empty table keys
+            if (maxCost != null)
+            {
+                Costs = Costs.Where(c => c <= maxCost.Value);
+            }
+
+            // Set table keys
+            KnapsackAlgorithm();
+        }
+
+        private void KnapsackAlgorithm()
+        {
             foreach (var cost in Costs)
             {
+                int categoryIndex = 0;
                 foreach (var category in Categories)
                 {
                     foreach (var element in category.Elements)
                     {
-                        var kvp = new KeyValuePair<decimal,Element>(cost,element);
-                        Table.Add(kvp,0);
+                        var kvp = new KeyValuePair<decimal, Element>(cost, element);
+
+                        decimal param1 = 0;
+                        if (categoryIndex != 0)
+                        {
+                            var previous = Categories.ElementAtOrDefault(categoryIndex - 1);
+                            param1 = MaxValueInCategory(previous, cost);
+                        }
+
+                        decimal param2 = 0;
+                        if (cost - element.Cost >= 0)
+                        {
+                            if (cost - element.Cost > 0 && categoryIndex != 0)
+                            {
+                                var previous = Categories.ElementAtOrDefault(categoryIndex - 1);
+                                param2 = MaxValueInCategory(previous, cost - element.Cost);
+                            }
+                            param2 += element.Value;
+                        }
+
+                        var max = param1 >= param2 ? param1 : param2;
+                        Table.Add(kvp, max);
                     }
+                    categoryIndex++;
                 }
             }
-
-
         }
 
         private IEnumerable<decimal> GetAllSums(IEnumerable<decimal> numbers)
@@ -106,6 +151,16 @@ namespace Knapsack
                                   select n1 + n2).ToList();
             sums.AddRange(enumerable);
             return sums.OrderBy(s => s).Distinct();
+        }
+
+        private decimal MaxValueInCategory(Category category, decimal currentCost)
+        {
+            if (category == null) return 0;
+            var elements = Table.Where(e => category.Elements.Contains(e.Key.Value));
+            var filteredElements = elements.Where(e => e.Key.Key == currentCost);
+            var enumerable = filteredElements as IList<KeyValuePair<KeyValuePair<decimal, Element>, decimal>> ?? filteredElements.ToList();
+            if (!enumerable.Any()) return 0;
+            return enumerable.Max(e => e.Value);
         }
 
         private void PrintLineSeparator(int pad)
