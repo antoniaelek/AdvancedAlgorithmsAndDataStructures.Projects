@@ -7,14 +7,20 @@ namespace Knapsack
 {
     public class Knapsack
     {
+        private readonly Dictionary<KeyValuePair<decimal, Element>, decimal> _table;
         public List<Category> Categories { get; set; }
-        public Dictionary<KeyValuePair<decimal,Element>,decimal> Table { get; }
+
+        public Dictionary<KeyValuePair<decimal, Element>, decimal> Table
+        {
+            get { return _table; }
+        }
+
         public IEnumerable<decimal> Costs { get; private set; }
 
         public Knapsack()
         {
             Categories = new List<Category>();
-            Table = new Dictionary<KeyValuePair<decimal, Element>, decimal>();
+            _table = new Dictionary<KeyValuePair<decimal, Element>, decimal>();
             Costs = new List<decimal>();
         }
 
@@ -28,10 +34,9 @@ namespace Knapsack
 
         public decimal? GetMaxValue()
         {
-            if (AlgorithmRun)
+            if (AlgorithmNotRun)
             {
-                Console.WriteLine("Algorithm not yet run.");
-                return null;
+                return 0;
             }
 
             // max cost == last row in table
@@ -48,9 +53,8 @@ namespace Knapsack
 
         public List<Element> GetOptimaElements()
         {
-            if (AlgorithmRun)
+            if (AlgorithmNotRun)
             {
-                Console.WriteLine("Algorithm not yet run.");
                 return null;
             }
 
@@ -75,7 +79,10 @@ namespace Knapsack
             return list;
         }
 
-        private bool AlgorithmRun => !Table.Any();
+        private bool AlgorithmNotRun
+        {
+            get { return !Table.Any(); }
+        }
 
         public void Run()
         {
