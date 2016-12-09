@@ -15,12 +15,15 @@ namespace Knapsack
             get { return _table; }
         }
 
+        public Dictionary<KeyValuePair<decimal, Element>, bool> DecisionTable { get; }
+
         public IEnumerable<decimal> Costs { get; private set; }
 
         public Knapsack()
         {
             Categories = new List<Category>();
             _table = new Dictionary<KeyValuePair<decimal, Element>, decimal>();
+            DecisionTable = new Dictionary<KeyValuePair<decimal, Element>, bool>();
             Costs = new List<decimal>();
         }
 
@@ -69,6 +72,10 @@ namespace Knapsack
                     .Where(e => category.Elements.Contains(e.Key.Value))
                     .OrderByDescending(e => e.Value);
                 var max2 = max.FirstOrDefault(e => e.Value <= maxCost);
+                bool maxChosen = false;
+                if (!DecisionTable.TryGetValue(max2.Key, out maxChosen)) continue;;
+                if (maxChosen == false) continue;
+                ;
                 list.Add(max2.Key.Value);
                 var remainingMax = max2.Value - max2.Key.Value.Value;
                 maxCost = remainingMax;
@@ -193,7 +200,9 @@ namespace Knapsack
                         }
 
                         var max = param1 >= param2 ? param1 : param2;
+                        var chosen = param1 <= param2;
                         Table.Add(kvp, max);
+                        DecisionTable.Add(kvp,chosen);
                     }
                     categoryIndex++;
                 }

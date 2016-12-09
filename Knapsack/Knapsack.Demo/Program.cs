@@ -8,7 +8,7 @@ namespace Knapsack.Demo
         static void Main()
         {
             var k = new Knapsack(
-                new Category("Albums", new Element("Rattle And Hum", 3, 30)
+                new Category("Albums", new Element("Rattle And Hum", 300, 90)
                                      , new Element("A Hard Day's Night", 7, 60)),
                 new Category("Books", new Element("1984", 4, 50)
                                     , new Element("Anna Karenina", 3, 50)
@@ -21,7 +21,7 @@ namespace Knapsack.Demo
             //                             new Element("mlijeko", 5, 4)));
 
             k.Run(90);
-            k.PrintTable(18);
+            k.PrintTable(20);
             Console.WriteLine();
             Console.WriteLine("Max value that can be achieved: " + k.GetMaxValue());
             var opt = k.GetOptimaElements();
