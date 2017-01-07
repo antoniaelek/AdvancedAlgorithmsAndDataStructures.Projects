@@ -96,7 +96,12 @@ namespace BellmanFord
                     var prev = l.ElementAtOrDefault(i);
                     var next = l.ElementAtOrDefault(i + 1);
                     if (next?.Distance != null && prev?.Distance != null)
-                        sum += prev.Distance.Value - next.Distance.Value;
+                    {
+                        var edge = Edges.FirstOrDefault(e => e.Destination == prev && e.Source == next);
+                        if (edge != null) sum +=edge.Weight;
+                        else break;
+                        //sum += prev.Distance.Value - next.Distance.Value;
+                    }
                 }
                 if (sum == l.First.Value.Distance) return l;
             }
