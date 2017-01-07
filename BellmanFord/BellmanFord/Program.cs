@@ -9,15 +9,12 @@ namespace BellmanFord
         static void Main()
         {
             var from = "a";
-            var to = "s";
-            var graph = TestCase2();
+            var to = "d";
+            var graph = TestCase1();
 
             graph.BellmanFord(from);
             var shortest = graph.ShortestPath(from, to);
             Console.WriteLine(graph.ToString(shortest));
-
-            //Console.WriteLine();
-            //Console.WriteLine("Shortest distance " + from + " -> " + to + " equals " + shortest.First.Value.Distance);
          }
 
         private static Graph TestCase1()

@@ -16,7 +16,7 @@ namespace BellmanFord
         public override string ToString()
         {
             string ret = "digraph G {\n";
-
+            ret += "rankdir=LR;\n";
             ret = SetVerticlesLabels(ret);
 
             foreach (var e in Edges)
@@ -33,7 +33,7 @@ namespace BellmanFord
         {
             string col = " color=\"" + colour + "\"";
             string ret = "digraph G {\n";
-            
+            ret += "  rankdir=LR;\n";
             ret = SetVerticlesLabels(ret);
 
             foreach (var e in Edges)
@@ -100,7 +100,7 @@ namespace BellmanFord
                         var edge = Edges.FirstOrDefault(e => e.Destination == prev && e.Source == next);
                         if (edge != null) sum +=edge.Weight;
                         else break;
-                        //sum += prev.Distance.Value - next.Distance.Value;
+
                     }
                 }
                 if (sum == l.First.Value.Distance) return l;
